@@ -15,9 +15,15 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(foreign)
 ```
 
-```{r}
-
+```{r warning = FALSE}
+wave1 <- read.spss("dataset2021/data/data/W1 Merged Data/Wave.1_Data/Merge/Wave1_20170906.sav", 
+                  to.data.frame=TRUE)
 ```
 
+```{r warning = FALSE}
+wave2 <- read.spss("dataset2021/data/data/W2 Merged Data/2w-3rd_release_all/merge/Wave2_20170724.sav", 
+                  to.data.frame=TRUE)
+```
