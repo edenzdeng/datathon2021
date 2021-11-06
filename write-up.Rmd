@@ -11,8 +11,11 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Introduction
 
-# Full Model
+# Exploratory Data Analysis and Data Engineering Process
+
+# Model
 
 For $i=1,\ldots,n$ observations, denote each observation's group of scores as $\textbf{Y}_i$, where
 $$
@@ -27,30 +30,26 @@ Y_{i,3}\\
 \text{economic satisfaction score}\\
 \end{array} \right)
 $$
-We will assume the likelihood of the data follows a multivariate normal distribution. The full model then becomes:
+For each observation, let $\boldsymbol{\theta} = ({\theta}_1, \theta_2, \theta_3)$ denote the mean scores for 1) political participation, 2) political satisfaction, and 3) economic satisfaction. Also, let $\Sigma$ denote the covariance matrix between the observations, where the $(i,j)^{\text{th}}$ component of $\Sigma$ is the covariance between $Y_i$ and~$Y_j$ and component variances lie along the diagonal.
+
+We will assume that the likelihood of the data follows a multivariate normal distribution. We'll also set semi-conjugate priors on $\theta$ and $\Sigma$ to follow multivariate normal and inverse Wishart distributions, respectively. The full model then becomes:
 
 $$\textbf{Y}_i \mid \boldsymbol{\theta}, \Sigma \sim MVN(\boldsymbol{\theta}, \Sigma).$$ 
 $$\boldsymbol{\theta} \sim MVN(\boldsymbol{\mu}_0, \Lambda_0)$$
 $$ \Sigma \sim \text{inverseWishart}(\nu_o, S_o^{-1}).$$
 
-Let $\boldsymbol{\theta} = ({\theta}_1, \theta_2, \theta_3)$ denote the mean scores for 1) political participation, 2) political satisfaction, and 3) economic satisfaction.
+### Hyperparameter settings
 
-Let $\Sigma$ denote the covariance matrix, where the $(i,j)^{\text{th}}$
-component of $\Sigma$ is the covariance between $Y_i$ and~$Y_j$, giving component variances along the diagonal of $\Sigma$.
-
-
-## Hyperparameter settings
-
-We will set the prior mean on $\boldsymbol{\theta}$ to be the average political participation, political satisfaction, and economic satisfaction scores. Specifically, let $\boldsymbol{\mu}_0 = (.5,.5,.5)^T$.
+The prior mean on $\boldsymbol{\theta}$ is best set to be a vector of the theoretical average political participation, political satisfaction, and economic satisfaction score. Since each score ranges from 0 to 1 we will let $\boldsymbol{\mu}_0 = (.5,.5,.5)^T$.
 
 Since the true mean cannot be below 0 or above 1, we will use a prior variance that puts little probability outside this range. Thus, the prior variances on $\boldsymbol{\theta}$ can be set as $\Lambda_0 = (.,.,.)^T$ so that the prior probability that $P(\theta_j \neq [0,1]) = 0.05.$ We will also take the prior correlation of 0.5, or rather $\lambda_{1,2} = ./2 = .$.
 
-For setting prior settings for $\Sigma$, we will take $S_o$ to be equal to $\boldsymbol{\Lambda}$. We will center $\Sigma$ around $S_o$ by setting 
+For prior settings on $\Sigma$, we will take $S_o$ to be equal to $\boldsymbol{\Lambda}$. We will center $\Sigma$ around $S_o$ by setting 
 $\nu_0 = p + . = .$. 
 
-# Gibbs Sampler
+### Gibbs Sampler
 
-In order to sample from the posterior distribution $p(\boldsymbol{\theta}, \Sigma \mid y_1, \ldots, y_n)$, we will implement a Gibbs sampler.
+In order to sample from the posterior distribution $p(\boldsymbol{\theta}, \Sigma \mid y_1, \ldots, y_n)$, we will implement a Gibbs sampler. From semi-conjugacy, we can derive that the full conditional distribution of $\theta$ is a multivariate normal update, and the full conditional distribution of $\Sigma$ is an inverse Wishart update. 
 
 ```{r}
 library(mvtnorm)
@@ -84,4 +83,17 @@ SIGMA <- rbind(SIGMA, c(Sigma))
 }
 ```
 
+We obtain the following samples from the joint posterior distribution.
+
+### Model Diagnostics 
+
+#### Traceplots
+
+#### Estimated Densities
+
+#### Running Average Plots
+
+# Posterior Inference
+
+# Conclusions
 
