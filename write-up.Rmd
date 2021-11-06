@@ -27,7 +27,7 @@ Y_{i,3}\\
 \text{economic satisfaction score}\\
 \end{array} \right)
 $$
-The full model is in the form of
+We will assume the likelihood of the data follows a multivariate normal distribution. The full model then becomes:
 
 $$\textbf{Y}_i \mid \boldsymbol{\theta}, \Sigma \sim MVN(\boldsymbol{\theta}, \Sigma).$$ 
 $$\boldsymbol{\theta} \sim MVN(\boldsymbol{\mu}_0, \Lambda_0)$$
@@ -39,8 +39,49 @@ Let $\Sigma$ denote the covariance matrix, where the $(i,j)^{\text{th}}$
 component of $\Sigma$ is the covariance between $Y_i$ and~$Y_j$, giving component variances along the diagonal of $\Sigma$.
 
 
-
 ## Hyperparameter settings
 
+We will set the prior mean on $\boldsymbol{\theta}$ to be the average political participation, political satisfaction, and economic satisfaction scores. Specifically, let $\boldsymbol{\mu}_0 = (.5,.5,.5)^T$.
+
+Since the true mean cannot be below 0 or above 1, we will use a prior variance that puts little probability outside this range. Thus, the prior variances on $\boldsymbol{\theta}$ can be set as $\Lambda_0 = (.,.,.)^T$ so that the prior probability that $P(\theta_j \neq [0,1]) = 0.05.$ We will also take the prior correlation of 0.5, or rather $\lambda_{1,2} = ./2 = .$.
+
+For setting prior settings for $\Sigma$, we will take $S_o$ to be equal to $\boldsymbol{\Lambda}$. We will center $\Sigma$ around $S_o$ by setting 
+$\nu_0 = p + . = .$. 
+
+# Gibbs Sampler
+
+In order to sample from the posterior distribution $p(\boldsymbol{\theta}, \Sigma \mid y_1, \ldots, y_n)$, we will implement a Gibbs sampler.
+
+```{r}
+library(mvtnorm)
+```
+
+
+```{r}
+# set hyper-parameters
+mu0 <- c(0.5,0.5, 0.5)
+L0 <- matrix(c(),nrow=3)
+nu0 <- 
+S0 <- L0
+```
+
+
+```{r}
+THETA <- SIGMA <- NULL
+set.seed(1)
+for (s in 1:5000) {
+## update theta
+Ln <- solve(solve(L0) + n*solve(Sigma))
+mun <- Ln %*% (solve(L0) %*% mu0 +
+n*solve(Sigma) %*% ybar)
+theta <- rmvnorm(1, mun, Ln)
+## update Sigma
+Sn <- S0 + (t(Y) - c(theta)) %*% t(t(Y)-c(theta))
+Sigma <- solve(rwish(nu0 + n, solve(Sn)))
+## save results
+THETA <- rbind(THETA, theta)
+SIGMA <- rbind(SIGMA, c(Sigma))
+}
+```
 
 
