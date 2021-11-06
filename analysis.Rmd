@@ -16,6 +16,8 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(foreign)
+library(extraDistr)
+library(naniar)
 ```
 
 ```{r warning = FALSE}
@@ -27,3 +29,34 @@ wave1 <- read.spss("dataset2021/data/data/W1 Merged Data/Wave.1_Data/Merge/Wave1
 wave2 <- read.spss("dataset2021/data/data/W2 Merged Data/2w-3rd_release_all/merge/Wave2_20170724.sav", 
                   to.data.frame=TRUE)
 ```
+
+```{r}
+# Country data
+mainland_orig <- read.spss("dataset2021/data/data/W1 Merged Data/Wave.1_Data/Mainland China/Mainland v4.2.sav", to.data.frame=TRUE)
+
+# Reduce data
+mainland <- mainland_orig[c("q005", "q006", "q098", "q106", "q127", "q130", "q131")]
+
+# Visualize missing values
+vis_miss(mainland)
+
+# impute missing data with categorical-dirichlet update
+impute_cat <- function(data) {
+  missing.index = which(is.na(data))
+  c <- plyr::count(data)
+  n = length(levels(data))
+  a <- c(rep(1,n))
+  for (i in missing.index) {
+    p = rdirichlet(1, c$freq[1:n] + a)
+    data[i] = rcat(1, p, c$x[1:n])
+  }
+  return(data)
+}
+
+mainland_impute = data.frame(matrix(ncol = ncol(mainland), nrow = nrow(mainland)))
+
+for (i in 1:ncol(mainland)) {
+  mainland_impute[ , i] <- impute_cat(mainland[ , i])
+}
+```
+
