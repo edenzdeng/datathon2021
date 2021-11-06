@@ -78,24 +78,31 @@ mcar_test(thailand) # not MCAR at alpha = 0.05
   
 # Categorical imputation using saturated log-linear models, MCMC
 mainland_impute <- catImp(mainland, M=1, pd=TRUE, type=3, rseed=4423)
+names(mainland_impute) <- names(mainland)
 write.csv(mainland_impute, "imputed_data/mainland_china_imputed.csv")
 
 hongkong_impute <- catImp(hongkong, M=1, pd=TRUE, type=3, rseed=4423)
+names(hongkong_impute) <- names(hongkong)
 write.csv(hongkong_impute, "imputed_data/hongkong_imputed.csv")
 
 korea_impute <- catImp(korea, M=1, pd=TRUE, type=3, rseed=4423)
+names(korea_impute) <- names(korea)
 write.csv(korea_impute, "imputed_data/korea_imputed.csv")
 
 japan_impute <- catImp(japan, M=1, pd=TRUE, type=3, rseed=4423)
+names(japan_impute) <- names(japan)
 write.csv(japan_impute, "imputed_data/japan_imputed.csv")
 
 philippines_impute <- catImp(philippines, M=1, pd=TRUE, type=3, rseed=4423)
+names(philippines_impute) <- names(philippines)
 write.csv(philippines_impute, "imputed_data/philippines_imputed.csv")
 
 taiwan_impute <- catImp(taiwan, M=1, pd=TRUE, type=3, rseed=4423)
+names(taiwan_impute) <- names(taiwan)
 write.csv(taiwan_impute, "imputed_data/taiwan_imputed.csv")
 
 thailand_impute <- catImp(thailand, M=1, pd=TRUE, type=3, rseed=4423)
+names(thailand_impute) <- names(thailand)
 write.csv(thailand_impute, "imputed_data/thailand_imputed.csv")
 ```
 
