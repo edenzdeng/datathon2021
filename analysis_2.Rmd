@@ -9,4 +9,29 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r load_data, warning = FALSE}
+taiwan_orig <- read.csv("probit_taiwan_data.csv")
+taiwan_orig <- taiwan_orig %>%
+  select(-X)
+```
+
+```{r impute}
+miss_var_summary(taiwan_orig)
+
+pct_miss(taiwan_orig)
+
+vis_miss(taiwan_orig)
+
+mcar_test(taiwan_orig)
+
+taiwan_impute <- catImp(taiwan_orig, M=1, pd=TRUE, steps = 500, type=3, rseed=4423)
+names(taiwan_impute) <- names(taiwan_orig)
+
+# rename and factor variables
+taiwan <- data.frame("Gender" = factor(taiwan_impute$se002, ordered = TRUE), "Age" = factor(taiwan_impute$se003, ordered = TRUE), "Education" = factor(taiwan_impute$se005, ordered = TRUE), "Income" = factor(taiwan_impute$se009, ordered = TRUE), "PolInterest" = factor(taiwan_impute$q056, ordered = TRUE), "DemSat" = factor(taiwan_impute$q098, ordered = TRUE), "Vote" = factor(taiwan_impute$q027, ordered = TRUE), "UnderstandPol" = factor(taiwan_impute$q127, ordered = TRUE), "TrustGov" = factor(taiwan_impute$q131, ordered = TRUE))
+
+write.csv(taiwan, "probit_taiwan_imputed.csv")
+```
+
+
 
