@@ -57,6 +57,24 @@ thailand <- thailand %>%
 
 # Visualize missing values
 vis_miss(mainland)
+miss_var_summary(mainland)
+pct_miss(mainland)
+
+miss_var_summary(korea)
+pct_miss(korea)
+
+pct_miss(japan)
+
+pct_miss(thailand)
+
+# test MCAR
+mcar_test(mainland)
+mcar_test(hongkong)
+mcar_test(korea) # not MCAR at alpha = 0.05
+mcar_test(japan) # not MCAR at alpha = 0.05
+mcar_test(philippines)
+mcar_test(taiwan)
+mcar_test(thailand) # not MCAR at alpha = 0.05
   
 # Categorical imputation using saturated log-linear models, MCMC
 mainland_impute <- catImp(mainland, M=1, pd=TRUE, type=3, rseed=4423)
