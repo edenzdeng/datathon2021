@@ -14,11 +14,33 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Full Model
 
+For $i=1,\ldots,n$ observations, denote each observation's group of scores as $\textbf{Y}_i$, where
+$$
+\textbf{Y}_{i} = \left( \begin{array}{c}
+Y_{i,1}\\
+Y_{i,2}\\
+Y_{i,3}\\
+\end{array} \right) 
+= \left( \begin{array}{c}
+\text{political participation score}\\
+\text{political satisfaction score}\\
+\text{economic satisfaction score}\\
+\end{array} \right)
+$$
+The full model is in the form of
+
 $$\textbf{Y}_i \mid \boldsymbol{\theta}, \Sigma \sim MVN(\boldsymbol{\theta}, \Sigma).$$ 
 $$\boldsymbol{\theta} \sim MVN(\boldsymbol{\mu}_0, \Lambda_0)$$
 $$ \Sigma \sim \text{inverseWishart}(\nu_o, S_o^{-1}).$$
 
-Let $\boldsymbol{\theta} = ({\theta}_1, \theta_2, \theta_3)$
+Let $\boldsymbol{\theta} = ({\theta}_1, \theta_2, \theta_3)$ denote the mean scores for 1) political participation, 2) political satisfaction, and 3) economic satisfaction.
 
-$i=1,\ldots,n.$
+Let $\Sigma$ denote the covariance matrix, where the $(i,j)^{\text{th}}$
+component of $\Sigma$ is the covariance between $Y_i$ and~$Y_j$, giving component variances along the diagonal of $\Sigma$.
+
+
+
+## Hyperparameter settings
+
+
 
