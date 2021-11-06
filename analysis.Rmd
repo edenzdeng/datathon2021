@@ -16,8 +16,8 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(foreign)
-library(extraDistr)
 library(naniar)
+library(mlmi)
 ```
 
 ```{r warning = FALSE}
@@ -30,33 +30,66 @@ wave2 <- read.spss("dataset2021/data/data/W2 Merged Data/2w-3rd_release_all/merg
                   to.data.frame=TRUE)
 ```
 
-```{r}
+```{r imputation}
 # Country data
-mainland_orig <- read.spss("dataset2021/data/data/W1 Merged Data/Wave.1_Data/Mainland China/Mainland v4.2.sav", to.data.frame=TRUE)
+mainland <- read.csv("cleaned_data/Mainland China_data.csv")
+hongkong <- read.csv("cleaned_data/Hong Kong_data.csv")
+korea <- read.csv("cleaned_data/Korea_data.csv")
+japan <- read.csv("cleaned_data/Japan_data.csv")
+philippines <- read.csv("cleaned_data/Philippines_data.csv")
+taiwan <- read.csv("cleaned_data/Taiwan_data.csv")
+thailand <- read.csv("cleaned_data/Thailand_data.csv")
 
-# Reduce data
-mainland <- mainland_orig[c("q005", "q006", "q098", "q106", "q127", "q130", "q131")]
+mainland <- mainland %>%
+  select(-c("name", "country", "X"))
+hongkong <- hongkong %>%
+  select(-c("name", "country", "X"))
+korea <- korea %>%
+  select(-c("name", "country", "X"))
+japan <- japan %>%
+  select(-c("name", "country", "X"))
+philippines <- philippines %>%
+  select(-c("name", "country", "X"))
+taiwan <- taiwan %>%
+  select(-c("name", "country", "X"))
+thailand <- thailand %>%
+  select(-c("name", "country", "X"))
 
 # Visualize missing values
 vis_miss(mainland)
+  
+# Categorical imputation using saturated log-linear models, MCMC
+mainland_impute <- catImp(mainland, M=1, pd=TRUE, type=3, rseed=4423)
+write.csv(mainland_impute, "imputed_data/mainland_china_imputed.csv")
 
-# impute missing data with categorical-dirichlet update
-impute_cat <- function(data) {
-  missing.index = which(is.na(data))
-  c <- plyr::count(data)
-  n = length(levels(data))
-  a <- c(rep(1,n))
-  for (i in missing.index) {
-    p = rdirichlet(1, c$freq[1:n] + a)
-    data[i] = rcat(1, p, c$x[1:n])
-  }
-  return(data)
-}
+hongkong_impute <- catImp(hongkong, M=1, pd=TRUE, type=3, rseed=4423)
+write.csv(hongkong_impute, "imputed_data/hongkong_imputed.csv")
 
-mainland_impute = data.frame(matrix(ncol = ncol(mainland), nrow = nrow(mainland)))
+korea_impute <- catImp(korea, M=1, pd=TRUE, type=3, rseed=4423)
+write.csv(korea_impute, "imputed_data/korea_imputed.csv")
 
-for (i in 1:ncol(mainland)) {
-  mainland_impute[ , i] <- impute_cat(mainland[ , i])
-}
+japan_impute <- catImp(japan, M=1, pd=TRUE, type=3, rseed=4423)
+write.csv(japan_impute, "imputed_data/japan_imputed.csv")
+
+philippines_impute <- catImp(philippines, M=1, pd=TRUE, type=3, rseed=4423)
+write.csv(philippines_impute, "imputed_data/philippines_imputed.csv")
+
+taiwan_impute <- catImp(taiwan, M=1, pd=TRUE, type=3, rseed=4423)
+write.csv(taiwan_impute, "imputed_data/taiwan_imputed.csv")
+
+thailand_impute <- catImp(thailand, M=1, pd=TRUE, type=3, rseed=4423)
+write.csv(thailand_impute, "imputed_data/thailand_imputed.csv")
+```
+
+```{r normalize}
+
+```
+
+```{r score}
+
+```
+
+```{r MVN_MVN}
+
 ```
 
