@@ -43,5 +43,17 @@ mcar_test(taiwan_orig)
 taiwan <- read.table("probit_taiwan_imputed.dat")
 ```
 
+```{r}
+model <- glm(Vote ~ ., family = binomial(link = "probit"), 
+    data = taiwan)
+
+summary(model)
+```
+
+```{r}
+levels(taiwan$Vote)
+```
+
+
 
 
