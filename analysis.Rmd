@@ -18,6 +18,7 @@ library(ggplot2)
 library(foreign)
 library(naniar)
 library(mlmi)
+library(glmnet)
 ```
 
 ```{r warning = FALSE}
@@ -106,15 +107,24 @@ names(thailand_impute) <- names(thailand)
 write.csv(thailand_impute, "imputed_data/thailand_imputed.csv")
 ```
 
-```{r normalize}
-
+```{r probit-frequentist}
+lm(binomial(link = "probit"))
 ```
 
-```{r score}
 
-```
+```{r probit-bayes}
+if(nchar(Sys.getenv("LONG_TEST")) != 0) {R=2000} else {R=10}
+set.seed(66)
 
-```{r MVN_MVN}
+# probit bayes model
+data1 = list(X=mainland, y=simout$y)
+mcmc1 = list(R=R, keep=1)
+
+out = rbprobitGibbs(Data=Data1, Mcmc=Mcmc1)
+summary(out$betadraw, tvalues=beta)
+
+## plotting example
+if(0){plot(out$betadraw, tvalues=beta)}
 
 ```
 
