@@ -2,14 +2,16 @@
 title: "analysis"
 author: "Eden Deng, Jane Zhang, Shari Tian"
 date: "11/6/2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r warning = FALSE}
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
