@@ -26,7 +26,6 @@ library(bayesm)
 # Load Data
 
 ```{r}
-
 taiwan_orig <- read.csv("probit_taiwan_data.csv")
 taiwan_orig <- taiwan_orig %>%
   select(-X)
@@ -57,7 +56,7 @@ taiwan <- read.table("probit_taiwan_imputed.dat")
 taiwan[colnames(taiwan)] <- lapply(taiwan[colnames(taiwan)], factor)
 ```
 
-# Probit Regression Model
+# Probit Regression Model (Full)
 
 ```{r}
 model <- glm(Vote ~ ., family = binomial(link = "probit"), 
@@ -66,7 +65,7 @@ model <- glm(Vote ~ ., family = binomial(link = "probit"),
 summary(model)
 ```
 
-# Bayesian Probit
+# Bayesian Probit Model
 
 ```{r}
 y <- c(taiwan$Vote)
@@ -136,41 +135,13 @@ ggdensity(betas[,5], title = "Density of Coefficient for Political Interest", xl
 
 ```
 
-# Final Selected Model
+# Final Selected Probit Model
 
 ```{r}
 step(model, scope = list(upper =~., lower =~1), k = log(nrow(taiwan)), direction = "both")
 ```
 
-
-```{r}
-# wave2 <- read.spss("dataset2021/data/data/W2 Merged Data/2w-3rd_release_all/merge/Wave2_20170724.sav", 
-#                   to.data.frame=TRUE)
-# 
-# taiwan2 <- wave2 %>%
-#   filter(country=="Taiwan") %>%
-#   select(se3a, q49, q38)
-# 
-# taiwan2$se3a <- as.numeric(taiwan2$se3a)
-# 
-# taiwan2$Age <- cut(taiwan2$se3a, breaks = c(0,25,30,35,40,45,50,55,60,71,76,Inf), right=FALSE, labels=c(2:12))
-# 
-# taiwan2 <- taiwan2 %>% select(-se3a)
-# 
-# taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q38 = c("Not applicable", "No answer", "Can't choose", "Decline to answer")))
-# 
-# taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q49 = c("No answer", "Can't choose", "Decline to answer")))
-# 
-# taiwan2x <- na.omit(taiwan2)
-# 
-# names(taiwan2x) <- c("PolInterest", "Vote", "Age")
-# 
-# taiwan2x$PolInterest <- factor(as.numeric(taiwan2x$PolInterest), ordered = TRUE)
-# taiwan2x$Age <- factor(taiwan2x$Age, ordered = TRUE)
-# 
-# taiwan2x$Vote[taiwan2x$Vote == "Yes"] <- "2"
-# taiwan2$Vote[taiwan2$Vote == "No"] <- "1"
-```
+# Performance Metrics
 
 ```{r performance_eval}
 taiwan2 <- read.csv("taiwan_data_w2.csv")
@@ -180,42 +151,6 @@ taiwan2$Age <- factor(taiwan2$Age, ordered = TRUE)
 taiwan2$Vote <- factor(taiwan2$Vote, ordered = TRUE)
 taiwan2$PolInterest <- factor(taiwan2$PolInterest, ordered = TRUE)
 
-<<<<<<< HEAD
-=======
-taiwan2 <- wave2 %>%
-  filter(country=="Taiwan") %>%
-  select(se3a, q49, q38)
-
-taiwan2$se3a <- as.numeric(taiwan2$se3a)
-
-taiwan2$Age <- cut(taiwan2$se3a, breaks = c(0,25,30,35,40,45,50,55,60,71,76,Inf), right=FALSE, labels=c(2:12))
-
-taiwan2 <- taiwan2 %>% select(-se3a)
-
-taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q38 = c("Not applicable", "No answer", "Can't choose", "Decline to answer")))
-
-taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q49 = c("No answer", "Can't choose", "Decline to answer")))
-
-taiwan2 <- na.omit(taiwan2)
-
-names(taiwan2) <- c("PolInterest", "Vote", "Age")
-
-taiwan2$PolInterest <- factor(as.numeric(taiwan2$PolInterest), ordered = TRUE)
-taiwan2$Age <- factor(taiwan2$Age, ordered = TRUE)
-
-#taiwan2$Vote[taiwan2$Vote == "Yes"] <- "2"
-#taiwan2$Vote[taiwan2$Vote == "No"] <- "1"
-
-Vote <- c(taiwan2$Vote)
-Vote <- replace(vote, vote == "Yes", "2")
-Vote <- replace(vote, vote == "No", "1")
-Vote <- factor(Vote, ordered = TRUE)
-
-taiwan2 <- taiwan2 %>% select(-Vote)
-taiwan2 <- cbind(taiwan2, Vote)
-```
-
-```{r}
 final_model <- glm(Vote ~ PolInterest + Age, family = binomial(link = "probit"), 
     data = taiwan)
 
