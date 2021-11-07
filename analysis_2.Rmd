@@ -9,6 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Load Packages
+
 ```{r load_data, warning = FALSE}
 library(tidyverse)
 library(dplyr)
@@ -21,12 +23,16 @@ library(bayesm)
 
 ```
 
+# Load Data
+
 ```{r}
 
 taiwan_orig <- read.csv("probit_taiwan_data.csv")
 taiwan_orig <- taiwan_orig %>%
   select(-X)
 ```
+
+# Data Imputation
 
 ```{r impute}
 miss_var_summary(taiwan_orig)
@@ -50,6 +56,8 @@ taiwan <- read.table("probit_taiwan_imputed.dat")
 # factor variables
 taiwan[colnames(taiwan)] <- lapply(taiwan[colnames(taiwan)], factor)
 ```
+
+# Probit Regression Model
 
 ```{r}
 model <- glm(Vote ~ ., family = binomial(link = "probit"), 
