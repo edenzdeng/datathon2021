@@ -111,18 +111,25 @@ betas <- out$betadraw
 
 
 ```{r}
-plot(density(betas[,2]), xlab = expression(beta_2),
-     main = expression(paste("Density of Coefficient for Age")))
-abline(v = mean(betas[,2]), col = "red")
+ci_b2 <- quantile(betas[,2], c(0.025, 0.975))
+ggdensity(betas[,2], title = "Density of Coefficient for Age", xlab = FALSE, fill = "lightgray",
+   add = "mean", rug = TRUE) +
+  geom_vline(xintercept = ci_b2[1], linetype = "dashed", color = "red") +
+  geom_vline(xintercept = ci_b2[2], linetype = "dashed", color = "red")
 ```
 ```{r}
-plot(density(betas[,4]), xlab = expression(beta_4),
-     main = expression(paste("Density of Coefficient for Income")))
-abline(v = mean(betas[,4]), col = "red")
+ci_b4 <- quantile(betas[,4], c(0.025, 0.975))
+ggdensity(betas[,4], title = "Density of Coefficient for Income", xlab = FALSE, fill = "lightgray",
+   add = "mean", rug = TRUE) +
+  geom_vline(xintercept = ci_b4[1], linetype = "dashed", color = "red") +
+  geom_vline(xintercept = ci_b4[2], linetype = "dashed", color = "red")
 ```
 
 ```{r}
-plot(density(betas[,5]), xlab = expression(beta_5),
-     main = expression(paste("Density of Coefficient for Political Interest")))
-abline(v = mean(betas[,5]), col = "red")
+ci_b5 <- quantile(betas[,5], c(0.025, 0.975))
+ggdensity(betas[,5], title = "Density of Coefficient for Political Interest", xlab = FALSE, fill = "lightgray",
+   add = "mean", rug = TRUE) +
+  geom_vline(xintercept = ci_b5[1], linetype = "dashed", color = "red") +
+  geom_vline(xintercept = ci_b5[2], linetype = "dashed", color = "red")
+
 ```
