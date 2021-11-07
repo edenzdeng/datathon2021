@@ -65,6 +65,7 @@ model <- glm(Vote ~ ., family = binomial(link = "probit"),
 
 summary(model)
 ```
+
 # Bayesian Probit
 
 ```{r}
@@ -109,6 +110,7 @@ out <- rbprobitGibbs(Data, Prior, Mcmc)
 betas <- out$betadraw
 ```
 
+# Density Plots
 
 ```{r}
 ci_b2 <- quantile(betas[,2], c(0.025, 0.975))
@@ -134,9 +136,12 @@ ggdensity(betas[,5], title = "Density of Coefficient for Political Interest", xl
 
 ```
 
+# Final Selected Model
+
 ```{r}
 step(model, scope = list(upper =~., lower =~1), k = log(nrow(taiwan)), direction = "both")
 ```
+
 
 ```{r}
 wave2 <- read.spss("dataset2021/data/data/W2 Merged Data/2w-3rd_release_all/merge/Wave2_20170724.sav", 
@@ -156,15 +161,23 @@ taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q38 = c("Not applicable", 
 
 taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q49 = c("No answer", "Can't choose", "Decline to answer")))
 
-taiwan2x <- na.omit(taiwan2)
+taiwan2 <- na.omit(taiwan2)
 
-names(taiwan2x) <- c("PolInterest", "Vote", "Age")
+names(taiwan2) <- c("PolInterest", "Vote", "Age")
 
-taiwan2x$PolInterest <- factor(as.numeric(taiwan2x$PolInterest), ordered = TRUE)
-taiwan2x$Age <- factor(taiwan2x$Age, ordered = TRUE)
+taiwan2$PolInterest <- factor(as.numeric(taiwan2$PolInterest), ordered = TRUE)
+taiwan2$Age <- factor(taiwan2$Age, ordered = TRUE)
 
-taiwan2x$Vote[taiwan2x$Vote == "Yes"] <- "2"
-taiwan2$Vote[taiwan2$Vote == "No"] <- "1"
+#taiwan2$Vote[taiwan2$Vote == "Yes"] <- "2"
+#taiwan2$Vote[taiwan2$Vote == "No"] <- "1"
+
+Vote <- c(taiwan2$Vote)
+Vote <- replace(vote, vote == "Yes", "2")
+Vote <- replace(vote, vote == "No", "1")
+Vote <- factor(Vote, ordered = TRUE)
+
+taiwan2 <- taiwan2 %>% select(-Vote)
+taiwan2 <- cbind(taiwan2, Vote)
 ```
 
 ```{r}
