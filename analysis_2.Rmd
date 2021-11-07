@@ -17,6 +17,11 @@ library(foreign)
 library(naniar)
 library(mlmi)
 library(glmnet)
+library(bayesm)
+
+```
+
+```{r}
 
 taiwan_orig <- read.csv("probit_taiwan_data.csv")
 taiwan_orig <- taiwan_orig %>%
@@ -36,7 +41,7 @@ mcar_test(taiwan_orig)
 #names(taiwan_impute) <- names(taiwan_orig)
 
 # rename variables
-taiwan <- data.frame("Gender" = factor(taiwan_impute$se002, ordered = TRUE), "Age" = factor(taiwan_impute$se003, ordered = TRUE), "Education" = factor(taiwan_impute$se005, ordered = TRUE), "Income" = factor(taiwan_impute$se009, ordered = TRUE), "PolInterest" = factor(taiwan_impute$q056, ordered = TRUE), "DemSat" = factor(taiwan_impute$q098, ordered = TRUE), "Vote" = factor(taiwan_impute$q027, ordered = TRUE), "UnderstandPol" = factor(taiwan_impute$q127, ordered = TRUE), "TrustGov" = factor(taiwan_impute$q131, ordered = TRUE))
+# taiwan <- data.frame("Gender" = factor(taiwan_impute$se002, ordered = TRUE), "Age" = factor(taiwan_impute$se003, ordered = TRUE), "Education" = factor(taiwan_impute$se005, ordered = TRUE), "Income" = factor(taiwan_impute$se009, ordered = TRUE), "PolInterest" = factor(taiwan_impute$q056, ordered = TRUE), "DemSat" = factor(taiwan_impute$q098, ordered = TRUE), "Vote" = factor(taiwan_impute$q027, ordered = TRUE), "UnderstandPol" = factor(taiwan_impute$q127, ordered = TRUE), "TrustGov" = factor(taiwan_impute$q131, ordered = TRUE))
 
 #write.table(taiwan, "probit_taiwan_imputed.dat")
 
@@ -52,11 +57,64 @@ model <- glm(Vote ~ ., family = binomial(link = "probit"),
 
 summary(model)
 ```
+# Bayesian Probit
 
 ```{r}
-levels(taiwan$Vote)
+y <- c(taiwan$Vote)
+y <- replace(y, y == 1, 0)
+y <- replace(y, y == 2, 1)
 ```
 
 
+```{r}
+gender <- c(taiwan$Gender)
+age <- c(taiwan$Age)
+education <- c(taiwan$Education)
+income <- c(taiwan$Income)
+polinterest <- c(taiwan$PolInterest)
+demsat <- c(taiwan$DemSat)
+understandpol <- c(taiwan$UnderstandPol)
+trustgov <- c(taiwan$TrustGov)
+```
+
+```{r}
+X<-cbind(gender,age,education, income,polinterest,demsat,understandpol,trustgov)
+betabar <- rep(0, nrow(X))
+A <- (1/nrow(X))*t(X)%*%X
+R <- 10000
+keep <- 1
+nprint <- 0
+```
+
+```{r}
+Data <- list(y=y, X=X)
+Prior <- list(A=A)
+Mcmc <- list(R=R, keep=keep, nprint=nprint)
+```
 
 
+```{r}
+out <- rbprobitGibbs(Data, Prior, Mcmc)
+```
+
+```{r}
+betas <- out$betadraw
+```
+
+
+```{r}
+plot(density(betas[,2]), xlab = expression(beta_2),
+     main = expression(paste("Density of Coefficient for Age")))
+abline(v = mean(betas[,2]), col = "red")
+```
+```{r}
+plot(density(betas[,4]), xlab = expression(beta_4),
+     main = expression(paste("Density of Coefficient for Income")))
+abline(v = mean(betas[,4]), col = "red")
+```
+
+```{r}
+plot(density(betas[,5]), xlab = expression(beta_5),
+     main = expression(paste("Density of Coefficient for Political Interest")))
+abline(v = mean(betas[,5]), col = "red")
+```
