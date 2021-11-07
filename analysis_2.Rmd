@@ -133,3 +133,73 @@ ggdensity(betas[,5], title = "Density of Coefficient for Political Interest", xl
   geom_vline(xintercept = ci_b5[2], linetype = "dashed", color = "red")
 
 ```
+
+```{r}
+step(model, scope = list(upper =~., lower =~1), k = log(nrow(taiwan)), direction = "both")
+```
+
+```{r}
+wave2 <- read.spss("dataset2021/data/data/W2 Merged Data/2w-3rd_release_all/merge/Wave2_20170724.sav", 
+                  to.data.frame=TRUE)
+
+taiwan2 <- wave2 %>%
+  filter(country=="Taiwan") %>%
+  select(se3a, q49, q38)
+
+taiwan2$se3a <- as.numeric(taiwan2$se3a)
+
+taiwan2$Age <- cut(taiwan2$se3a, breaks = c(0,25,30,35,40,45,50,55,60,71,76,Inf), right=FALSE, labels=c(2:12))
+
+taiwan2 <- taiwan2 %>% select(-se3a)
+
+taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q38 = c("Not applicable", "No answer", "Can't choose", "Decline to answer")))
+
+taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q49 = c("No answer", "Can't choose", "Decline to answer")))
+
+taiwan2x <- na.omit(taiwan2)
+
+names(taiwan2x) <- c("PolInterest", "Vote", "Age")
+
+taiwan2x$PolInterest <- factor(as.numeric(taiwan2x$PolInterest), ordered = TRUE)
+taiwan2x$Age <- factor(taiwan2x$Age, ordered = TRUE)
+
+taiwan2x$Vote[taiwan2x$Vote == "Yes"] <- "2"
+taiwan2$Vote[taiwan2$Vote == "No"] <- "1"
+```
+
+```{r}
+final_model <- glm(Vote ~ PolInterest + Age, family = binomial(link = "probit"), 
+    data = taiwan)
+
+X <- taiwan2 %>%
+  select(-Vote)
+
+Yhat <- predict(final_model, newdata = X,
+            type = "response")
+
+library(pROC)
+test_roc = roc(taiwan2$Vote ~ Yhat, plot = TRUE, print.auc = TRUE)
+thresh <- coords(test_roc, "best")['threshold']
+
+model_pred <- cut(Yhat, breaks = c(-Inf,thresh,Inf), right=FALSE, labels=c(2:3))
+
+train_tab = table(predicted = model_pred, actual = taiwan2$Vote)
+library(caret)
+train_con_mat = confusionMatrix(train_tab, positive = "3")
+c(train_con_mat$overall["Accuracy"], 
+  train_con_mat$byClass["Sensitivity"], 
+  train_con_mat$byClass["Specificity"])
+
+# plot
+library(cvms)
+tib <- tibble("target" = taiwan2$Vote,
+                     "prediction" = model_pred)
+
+basic_table <- table(tib)
+cfm <- as_tibble(basic_table)
+plot_confusion_matrix(cfm, 
+                      target_col = "target", 
+                      prediction_col = "prediction",
+                      counts_col = "n")
+```
+
