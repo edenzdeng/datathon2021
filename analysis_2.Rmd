@@ -216,7 +216,6 @@ taiwan2 <- cbind(taiwan2, Vote)
 ```
 
 ```{r}
->>>>>>> 6dd65224884a662a85a5764f1e367e4d65f67951
 final_model <- glm(Vote ~ PolInterest + Age, family = binomial(link = "probit"), 
     data = taiwan)
 
