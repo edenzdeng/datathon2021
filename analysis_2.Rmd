@@ -65,6 +65,7 @@ model <- glm(Vote ~ ., family = binomial(link = "probit"),
 
 summary(model)
 ```
+
 # Bayesian Probit
 
 ```{r}
@@ -109,6 +110,7 @@ out <- rbprobitGibbs(Data, Prior, Mcmc)
 betas <- out$betadraw
 ```
 
+# Density Plots
 
 ```{r}
 ci_b2 <- quantile(betas[,2], c(0.025, 0.975))
@@ -134,9 +136,12 @@ ggdensity(betas[,5], title = "Density of Coefficient for Political Interest", xl
 
 ```
 
+# Final Selected Model
+
 ```{r}
 step(model, scope = list(upper =~., lower =~1), k = log(nrow(taiwan)), direction = "both")
 ```
+
 
 ```{r}
 # wave2 <- read.spss("dataset2021/data/data/W2 Merged Data/2w-3rd_release_all/merge/Wave2_20170724.sav", 
@@ -175,6 +180,43 @@ taiwan2$Age <- factor(taiwan2$Age, ordered = TRUE)
 taiwan2$Vote <- factor(taiwan2$Vote, ordered = TRUE)
 taiwan2$PolInterest <- factor(taiwan2$PolInterest, ordered = TRUE)
 
+<<<<<<< HEAD
+=======
+taiwan2 <- wave2 %>%
+  filter(country=="Taiwan") %>%
+  select(se3a, q49, q38)
+
+taiwan2$se3a <- as.numeric(taiwan2$se3a)
+
+taiwan2$Age <- cut(taiwan2$se3a, breaks = c(0,25,30,35,40,45,50,55,60,71,76,Inf), right=FALSE, labels=c(2:12))
+
+taiwan2 <- taiwan2 %>% select(-se3a)
+
+taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q38 = c("Not applicable", "No answer", "Can't choose", "Decline to answer")))
+
+taiwan2 <- taiwan2 %>% replace_with_na(replace = list(q49 = c("No answer", "Can't choose", "Decline to answer")))
+
+taiwan2 <- na.omit(taiwan2)
+
+names(taiwan2) <- c("PolInterest", "Vote", "Age")
+
+taiwan2$PolInterest <- factor(as.numeric(taiwan2$PolInterest), ordered = TRUE)
+taiwan2$Age <- factor(taiwan2$Age, ordered = TRUE)
+
+#taiwan2$Vote[taiwan2$Vote == "Yes"] <- "2"
+#taiwan2$Vote[taiwan2$Vote == "No"] <- "1"
+
+Vote <- c(taiwan2$Vote)
+Vote <- replace(vote, vote == "Yes", "2")
+Vote <- replace(vote, vote == "No", "1")
+Vote <- factor(Vote, ordered = TRUE)
+
+taiwan2 <- taiwan2 %>% select(-Vote)
+taiwan2 <- cbind(taiwan2, Vote)
+```
+
+```{r}
+>>>>>>> 6dd65224884a662a85a5764f1e367e4d65f67951
 final_model <- glm(Vote ~ PolInterest + Age, family = binomial(link = "probit"), 
     data = taiwan)
 
